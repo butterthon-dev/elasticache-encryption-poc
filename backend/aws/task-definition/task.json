@@ -1,7 +1,9 @@
 {
   "family": "dev-elasticache-poc-taskdef-backend",
   "networkMode": "awsvpc",
-  "requiresCompatibilities": ["FARGATE"],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
   "cpu": "256",
   "memory": "512",
   "runtimePlatform": {
@@ -24,11 +26,30 @@
         }
       ],
       "environment": [
-        { "name": "DJANGO_DEBUG", "value": "False" },
-        { "name": "REDIS_HOST", "value": "localhost" },
-        { "name": "REDIS_PORT", "value": "6379" },
-        { "name": "REDIS_DB", "value": "0" },
-        { "name": "REDIS_SSL", "value": "False" }
+        {
+          "name": "PYTHONUNBUFFERED",
+          "value": "1"
+        },
+        {
+          "name": "DJANGO_DEBUG",
+          "value": "False"
+        },
+        {
+          "name": "REDIS_HOST",
+          "value": "localhost"
+        },
+        {
+          "name": "REDIS_PORT",
+          "value": "6379"
+        },
+        {
+          "name": "REDIS_DB",
+          "value": "0"
+        },
+        {
+          "name": "REDIS_SSL",
+          "value": "False"
+        }
       ],
       "secrets": [
         {

@@ -23,9 +23,9 @@ variable "private_subnets" {
   description = "プライベートサブネットのマップ（key: AZ, value: CIDR）"
 }
 
-variable "github_repository" {
+variable "github_subject_prefix" {
   type        = string
-  description = "デプロイを許可するGitHubリポジトリ（org/repo形式）"
+  description = "デプロイを許可するリポジトリを表すOIDCトークンのsubクレームの接頭辞"
 }
 
 variable "github_allowed_refs" {

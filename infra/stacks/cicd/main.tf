@@ -8,7 +8,7 @@ data "aws_iam_openid_connect_provider" "github_actions" {
 locals {
   # OIDCトークンのsubクレーム。指定したリポジトリの指定したrefからのAssumeのみを許可する
   allowed_subjects = [
-    for ref in var.github_allowed_refs : "repo:${var.github_repository}:ref:${ref}"
+    for ref in var.github_allowed_refs : "${var.github_subject_prefix}:ref:${ref}"
   ]
 }
 

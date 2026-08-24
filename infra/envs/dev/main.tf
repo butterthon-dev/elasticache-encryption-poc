@@ -32,10 +32,10 @@ module "compute" {
 module "cicd" {
   source = "../../stacks/cicd"
 
-  name_prefix         = local.name_prefix
-  github_repository   = var.github_repository
-  github_allowed_refs = var.github_allowed_refs
-  ecs_service_arns    = [module.compute.backend_service_arn]
+  name_prefix           = local.name_prefix
+  github_subject_prefix = var.github_subject_prefix
+  github_allowed_refs   = var.github_allowed_refs
+  ecs_service_arns      = [module.compute.backend_service_arn]
   pass_role_arns = [
     module.compute.backend_task_role_arn,
     module.compute.backend_task_execution_role_arn,

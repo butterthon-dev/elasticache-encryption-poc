@@ -108,6 +108,42 @@ module "backend_alb_security_group" {
   vpc_id      = var.vpc_id
 }
 
+module "internet_ingress_to_backend_alb_http" {
+  source = "../../modules/network/security-group-ingress-rule"
+
+  security_group_id = module.backend_alb_security_group.id
+  description       = "HTTP from Internet"
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 80
+  to_port           = 80
+  ip_protocol       = "tcp"
+}
+
+module "internet_ingress_to_backend_alb_https" {
+  source = "../../modules/network/security-group-ingress-rule"
+
+  security_group_id = module.backend_alb_security_group.id
+  description       = "HTTPS from Internet"
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 443
+  to_port           = 443
+  ip_protocol       = "tcp"
+}
+
+# ALBからバックエンドサービスへの転送とヘルスチェック。
+# aws_security_groupはデフォルトの全許可egressを作らないため、このルールが無いと
+# ヘルスチェックがタイムアウトしてタスクが起動と停止を繰り返す。
+module "backend_alb_to_backend_service" {
+  source = "../../modules/network/security-group-egress-rule"
+
+  security_group_id            = module.backend_alb_security_group.id
+  description                  = "App port to Backend Service"
+  referenced_security_group_id = module.backend_security_group.id
+  from_port                    = 8000
+  to_port                      = 8000
+  ip_protocol                  = "tcp"
+}
+
 module "backend_alb" {
   source = "../../modules/alb/load-balancer"
 

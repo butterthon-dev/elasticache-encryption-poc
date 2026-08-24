@@ -3,9 +3,19 @@ variable "name_prefix" {
   description = "CI/CD関連リソース名の接頭辞"
 }
 
-variable "github_repository" {
+variable "github_subject_prefix" {
   type        = string
-  description = "デプロイを許可するGitHubリポジトリ（org/repo形式）"
+  description = <<-EOT
+    デプロイを許可するリポジトリを表すOIDCトークンのsubクレームの接頭辞。
+    通常は "repo:<org>/<repo>" だが、immutable subject claimが有効なOrganizationでは
+    "repo:<org>@<org_id>/<repo>@<repo_id>" になる。以下のコマンドで実際の値を取得できる。
+      gh api /repos/<org>/<repo>/actions/oidc/customization/sub --jq .sub_claim_prefix
+  EOT
+
+  validation {
+    condition     = startswith(var.github_subject_prefix, "repo:")
+    error_message = "github_subject_prefixは\"repo:\"で始まる必要があります。"
+  }
 }
 
 variable "github_allowed_refs" {
