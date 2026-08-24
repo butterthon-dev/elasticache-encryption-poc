@@ -1,0 +1,9 @@
+.venv
+.git
+.env
+.env.*
+db.sqlite3
+__pycache__
+*.pyc
+aws
+compose.yaml

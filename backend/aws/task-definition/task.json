@@ -1,0 +1,49 @@
+{
+  "family": "dev-elasticache-poc-taskdef-backend",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  },
+  "taskRoleArn": "arn:aws:iam::__AWS_ACCOUNT_ID__:role/dev-elasticache-poc-role-backend-task",
+  "executionRoleArn": "arn:aws:iam::__AWS_ACCOUNT_ID__:role/dev-elasticache-poc-role-backend-task-execution",
+  "containerDefinitions": [
+    {
+      "name": "api",
+      "image": "__AWS_ACCOUNT_ID__.dkr.ecr.__AWS_REGION__.amazonaws.com/dev-elasticache-poc-repo-backend:latest",
+      "essential": true,
+      "readonlyRootFilesystem": false,
+      "portMappings": [
+        {
+          "name": "api",
+          "containerPort": 8000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        { "name": "DJANGO_DEBUG", "value": "False" },
+        { "name": "REDIS_HOST", "value": "localhost" },
+        { "name": "REDIS_PORT", "value": "6379" },
+        { "name": "REDIS_DB", "value": "0" },
+        { "name": "REDIS_SSL", "value": "False" }
+      ],
+      "secrets": [
+        {
+          "name": "DJANGO_SECRET",
+          "valueFrom": "arn:aws:ssm:__AWS_REGION__:__AWS_ACCOUNT_ID__:parameter/dev-elasticache-poc/backend/django-secret"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/aws/ecs/dev-elasticache-poc-cluster-main/dev-elasticache-poc-service-backend",
+          "awslogs-region": "__AWS_REGION__",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}
