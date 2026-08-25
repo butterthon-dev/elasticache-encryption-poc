@@ -61,6 +61,7 @@ resource "aws_elasticache_replication_group" "this" {
   at_rest_encryption_enabled = var.at_rest_encryption_enabled
   snapshot_retention_limit   = var.snapshot_retention_limit
   snapshot_window            = var.snapshot_window
+  snapshot_name              = var.snapshot_name
 
   log_delivery_configuration {
     destination      = aws_cloudwatch_log_group.this.name

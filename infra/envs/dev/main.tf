@@ -1,11 +1,11 @@
 locals {
-  name_prefix = "${var.env}-${var.system}"
-  #   aws_account_id = data.aws_caller_identity.current.account_id
-  #   region         = data.aws_region.current.region
+  name_prefix    = "${var.env}-${var.system}"
+  aws_account_id = data.aws_caller_identity.current.account_id
+  region         = data.aws_region.current.region
 }
 
-# data "aws_caller_identity" "current" {}
-# data "aws_region" "current" {}
+data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
 
 module "network" {
   source = "../../stacks/core-network"
@@ -19,15 +19,16 @@ module "network" {
 module "compute" {
   source = "../../stacks/compute"
 
-  env                           = var.env
-  name_prefix                   = local.name_prefix
-  vpc_id                        = module.network.vpc_id
-  vpc_cidr_block                = var.vpc_cidr_block
-  private_subnet_ids            = module.network.private_subnet_ids
-  public_subnet_ids             = module.network.public_subnet_ids
-  gateway_vpce_prefix_list_maps = module.network.gateway_vpce_prefix_list_maps
-  hosted_zone_name              = "viz.butterthon-dev.jp"
-  backend_domain                = "api.viz.butterthon-dev.jp"
+  env                               = var.env
+  name_prefix                       = local.name_prefix
+  vpc_id                            = module.network.vpc_id
+  vpc_cidr_block                    = var.vpc_cidr_block
+  private_subnet_ids                = module.network.private_subnet_ids
+  public_subnet_ids                 = module.network.public_subnet_ids
+  gateway_vpce_prefix_list_maps     = module.network.gateway_vpce_prefix_list_maps
+  hosted_zone_name                  = "viz.butterthon-dev.jp"
+  backend_domain                    = "api.viz.butterthon-dev.jp"
+  backend_elasticache_snapshot_name = "dev-elasticache-poc-elasticache-items-20260825"
 }
 
 module "cicd" {

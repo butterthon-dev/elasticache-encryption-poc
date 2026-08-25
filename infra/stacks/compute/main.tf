@@ -99,6 +99,17 @@ module "backend_service_to_gateway_vpce" {
   ip_protocol       = "tcp"
 }
 
+module "backend_service_to_elasticache" {
+  source = "../../modules/network/security-group-egress-rule"
+
+  security_group_id = module.backend_security_group.id
+  description       = "Backend ECS Service to Elasticache"
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 6379
+  to_port           = 6379
+  ip_protocol       = "tcp"
+}
+
 
 # ALB
 
@@ -334,7 +345,7 @@ module "backend_cache" {
       to_port   = 6379
       protocol  = "tcp"
       security_groups = [
-        module.backend_alb_security_group.id,
+        module.backend_security_group.id,
       ]
     }
   ]
@@ -342,9 +353,15 @@ module "backend_cache" {
   # 冗長化
   automatic_failover_enabled = false # 自動フェイルオーバー無効
 
-  # 暗号化設定（初回はどちらもFalse）
-  transit_encryption_enabled = false # 転送中暗号化（TLS）無効
-  at_rest_encryption_enabled = false # 保存時暗号化無効
+  # # 暗号化設定（初回はどちらもfalse）
+  # transit_encryption_enabled = false # 転送中暗号化（TLS）無効
+  # at_rest_encryption_enabled = false # 保存時暗号化無効
+  # snapshot_arns = []
 
   apply_immediately = true
+
+  # 暗号化設定（スナップショット取得後、どちらもtrue）
+  transit_encryption_enabled = true # 転送中暗号化（TLS）有効
+  at_rest_encryption_enabled = true # 保存時暗号化有効
+  snapshot_name              = var.backend_elasticache_snapshot_name
 }

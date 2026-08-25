@@ -178,3 +178,9 @@ variable "snapshot_window" {
   description = "ElastiCacheがキャッシュクラスタのデイリースナップショットの取得を開始する時間帯（UTC）"
   default     = "18:00-19:00" // 3:00-4:00(JST)
 }
+
+variable "snapshot_name" {
+  type        = string
+  description = "スナップショット名"
+  default     = null
+}

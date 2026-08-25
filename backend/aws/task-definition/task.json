@@ -48,7 +48,7 @@
         },
         {
           "name": "REDIS_SSL",
-          "value": "False"
+          "value": "True"
         }
       ],
       "secrets": [

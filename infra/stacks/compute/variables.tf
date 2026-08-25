@@ -42,3 +42,9 @@ variable "backend_domain" {
   type        = string
   description = "バックエンドのドメイン"
 }
+
+variable "backend_elasticache_snapshot_name" {
+  type        = string
+  description = "スナップショット名"
+  default     = null
+}
