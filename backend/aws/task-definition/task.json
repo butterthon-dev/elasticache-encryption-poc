@@ -36,7 +36,7 @@
         },
         {
           "name": "DJANGO_SETTINGS_MODULE",
-          "value": "config.develop"
+          "value": "config.development"
         },
         {
           "name": "REDIS_PORT",
