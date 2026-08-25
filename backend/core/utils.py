@@ -5,6 +5,7 @@ from django.conf import settings
 class RedisUtil:
     """Redisのユーティリティ"""
     def __init__(self) -> None:
+        print("Redis SSL:", settings.REDIS_SSL)
         self.redis_client = redis.Redis(
             host=settings.REDIS_HOST,
             port=settings.REDIS_PORT,
