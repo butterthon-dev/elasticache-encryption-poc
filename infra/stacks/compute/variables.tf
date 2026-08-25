@@ -1,3 +1,8 @@
+variable "env" {
+  type        = string
+  description = "環境名"
+}
+
 variable "name_prefix" {
   type        = string
   description = "ネットワーク関連リソース名の接頭辞"

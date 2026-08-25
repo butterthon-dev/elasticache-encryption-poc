@@ -23,7 +23,7 @@ module "backend_task_role" {
 module "backend_django_secret" {
   source = "../../modules/ssm/parameter"
 
-  name        = "/${var.name_prefix}/backend/django-secret"
+  name        = "/${replace(var.name_prefix, "${var.env}-", "${var.env}/")}/backend/django-secret"
   description = "Django SECRET_KEY for the backend service."
   type        = "SecureString"
   value       = "PLACEHOLDER"
@@ -32,8 +32,11 @@ module "backend_django_secret" {
 module "backend_task_execution_role" {
   source = "../../modules/iam/roles/backend-task-execution-role"
 
-  name_prefix        = var.name_prefix
-  ssm_parameter_arns = [module.backend_django_secret.arn]
+  name_prefix = var.name_prefix
+  ssm_parameter_arns = [
+    module.backend_django_secret.arn,
+    module.backend_cache.ssm_primary_endpoint_arn,
+  ]
 }
 
 # Security Group Rules
@@ -295,4 +298,53 @@ module "backend_service" {
     container_name   = "api"
     container_port   = 8000
   }
+}
+
+
+###############################
+# ElastiCache（Valkey）
+###############################
+
+module "backend_cache" {
+  source = "../../modules/elasticache"
+
+  # 基本設定
+  env         = var.env
+  name_prefix = var.name_prefix
+  name        = "items"
+
+  # ネットワーク設定
+  vpc_id     = var.vpc_id
+  subnet_ids = var.private_subnet_ids
+
+  # Valkey設定
+  engine               = "valkey"
+  engine_version       = "9.1"
+  parameter_group_name = "default.valkey9"
+  node_type            = "cache.t3.micro"
+  port                 = 6379
+
+  # クラスター設定は無効
+  cluster_mode = "disabled"
+
+  # セキュリティ設定（バックエンドのECSサービスからのアクセスを許可）
+  ingress_rules = [
+    {
+      from_port = 6379
+      to_port   = 6379
+      protocol  = "tcp"
+      security_groups = [
+        module.backend_alb_security_group.id,
+      ]
+    }
+  ]
+
+  # 冗長化
+  automatic_failover_enabled = false # 自動フェイルオーバー無効
+
+  # 暗号化設定（初回はどちらもFalse）
+  transit_encryption_enabled = false # 転送中暗号化（TLS）無効
+  at_rest_encryption_enabled = false # 保存時暗号化無効
+
+  apply_immediately = true
 }

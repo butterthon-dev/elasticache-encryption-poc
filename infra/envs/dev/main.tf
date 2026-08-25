@@ -19,6 +19,7 @@ module "network" {
 module "compute" {
   source = "../../stacks/compute"
 
+  env                           = var.env
   name_prefix                   = local.name_prefix
   vpc_id                        = module.network.vpc_id
   vpc_cidr_block                = var.vpc_cidr_block

@@ -142,3 +142,7 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "検証用API",
     "VERSION": "1.0.0",
 }
+
+REDIS_HOST = env_vars.redis_host
+REDIS_PORT = env_vars.redis_port
+REDIS_DB = env_vars.redis_db

@@ -1,16 +1,15 @@
 import redis
-
-from env_vars import env_vars
+from django.conf import settings
 
 
 class RedisUtil:
     """Redisのユーティリティ"""
     def __init__(self) -> None:
         self.redis_client = redis.Redis(
-            host=env_vars.redis_host,
-            port=env_vars.redis_port,
-            db=env_vars.redis_db,
-            ssl=env_vars.redis_ssl,
+            host=settings.REDIS_HOST,
+            port=settings.REDIS_PORT,
+            db=settings.REDIS_DB,
+            ssl=settings.REDIS_SSL,
         )
 
     def set(self, key: str, value: str) -> None:

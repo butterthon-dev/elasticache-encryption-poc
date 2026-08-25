@@ -5,6 +5,8 @@ services:
       dockerfile: Dockerfile 
       args:
         DEVELOPMENT: 1
+    environment:
+      - DJANGO_SETTINGS_MODULE: "config.local"
     volumes:
       - .:/app
     ports:
