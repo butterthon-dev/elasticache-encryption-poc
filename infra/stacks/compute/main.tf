@@ -338,7 +338,9 @@ module "backend_cache" {
   # クラスター設定は無効
   cluster_mode = "disabled"
 
-  # セキュリティ設定（バックエンドのECSサービスからのアクセスを許可）
+  # セキュリティ設定
+  # ・バックエンドのECSサービスからのアクセスを許可
+  # ・ValKeyデータ確認用VMからのアクセスを許可
   ingress_rules = [
     {
       from_port = 6379
@@ -346,6 +348,7 @@ module "backend_cache" {
       protocol  = "tcp"
       security_groups = [
         module.backend_security_group.id,
+        module.bastion_security_group.id,
       ]
     }
   ]
@@ -356,12 +359,55 @@ module "backend_cache" {
   # # 暗号化設定（初回はどちらもfalse）
   # transit_encryption_enabled = false # 転送中暗号化（TLS）無効
   # at_rest_encryption_enabled = false # 保存時暗号化無効
-  # snapshot_arns = []
+  # snapshot_name = null
 
   apply_immediately = true
 
   # 暗号化設定（スナップショット取得後、どちらもtrue）
   transit_encryption_enabled = true # 転送中暗号化（TLS）有効
   at_rest_encryption_enabled = true # 保存時暗号化有効
-  snapshot_name              = var.backend_elasticache_snapshot_name
+  # snapshot_name              = var.backend_elasticache_snapshot_name # Elasticacheを復元した後はignore_changesのコメントアウトを解除して、呼び出し側のsnapshot_nameを行ごと削除
+}
+
+
+###############################
+# ValKeyデータ確認用のVM
+###############################
+
+module "bastion_role" {
+  source = "../../modules/iam/roles/bastion-role"
+
+  name_prefix = var.name_prefix
+  role_name   = "bastion"
+}
+
+module "bastion_security_group" {
+  source = "../../modules/network/security-group"
+
+  name_prefix = var.name_prefix
+  name        = "bastion"
+  description = "Security group for bastion"
+  vpc_id      = var.vpc_id
+}
+
+module "bastion_security_group_egress_rule" {
+  source = "../../modules/network/security-group-egress-rule"
+
+  security_group_id = module.bastion_security_group.id
+  description       = "Egress rule for bastion"
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = -1
+  to_port           = -1
+  ip_protocol       = "-1"
+}
+
+module "bastion" {
+  source = "../../modules/ec2"
+
+  name_prefix        = var.name_prefix
+  instance_name      = "bastion"
+  instance_type      = "t2.micro"
+  subnet_id          = var.private_subnet_ids[0]
+  security_group_ids = [module.bastion_security_group.id]
+  attach_role_name   = module.bastion_role.name
 }

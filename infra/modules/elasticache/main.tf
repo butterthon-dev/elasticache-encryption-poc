@@ -87,6 +87,11 @@ resource "aws_elasticache_replication_group" "this" {
     }
   }
 
+  # Elasticacheを復元した後はignore_changesのコメントアウトを解除して、呼び出し側のsnapshot_nameを行ごと削除
+  lifecycle {
+    ignore_changes = [snapshot_name]
+  }
+
   tags = var.tags
 }
 

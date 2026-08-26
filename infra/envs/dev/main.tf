@@ -28,7 +28,7 @@ module "compute" {
   gateway_vpce_prefix_list_maps     = module.network.gateway_vpce_prefix_list_maps
   hosted_zone_name                  = "viz.butterthon-dev.jp"
   backend_domain                    = "api.viz.butterthon-dev.jp"
-  backend_elasticache_snapshot_name = "dev-elasticache-poc-elasticache-items-20260825"
+  backend_elasticache_snapshot_name = "dev-elasticache-poc-elasticache-items-20260826"
 }
 
 module "cicd" {
